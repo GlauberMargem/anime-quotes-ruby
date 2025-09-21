@@ -12,7 +12,6 @@ GEM
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
     pg (1.6.2-x64-mingw-ucrt)
-    uri (1.0.3)
 
 PLATFORMS
   x64-mingw-ucrt
@@ -21,7 +20,6 @@ DEPENDENCIES
   erb
   httparty
   pg
-  uri
 
 BUNDLED WITH
    2.6.9

@@ -1,6 +1,7 @@
 require "httparty"
 require "./formatarUrl.rb"
 require "erb"
+require "./bancoDeDados.rb"
 
 # a api que estou utilizando é essa https://animechan.io/
 
@@ -9,13 +10,17 @@ class BuscarAnime
 
     def initialize
         @formatar = FormatarUrl.new
+        @db = BancoDeDados.new
+        @db.criar_tabela
     end
 
     def buscar_anime_pelo_nome(nomeDoAnime)
         nomeFormatado = ERB::Util.url_encode(nomeDoAnime)
         resposta = HTTParty.get("#{UrlBase}/anime/#{nomeFormatado}")
 
-        if resposta.code == 200
+        case resposta.code
+
+        when 200
             resposta = resposta.parsed_response
 
             if resposta['status'] == 'success' and resposta['data']
@@ -36,10 +41,11 @@ class BuscarAnime
                     traducao = respostaApiTraducao.parsed_response['translation']
                     puts "Sinopse traduzida: #{traducao}\n\n"
                 end
+
+                @db.salvar_anime(nome, episodios, sinopse, traducao)
             end
-        if resposta.code == 429
+        when 429
             puts "Muitas tentativas de buscar anime, tente novamente em 1 hora. Código: #{resposta.code}"
-        end
         else
             puts "Erro ao buscar o anime #{nomeDoAnime}, verifique se não há erros de digitação. Código: #{resposta.code}"
         end
